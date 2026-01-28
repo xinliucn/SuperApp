@@ -36,7 +36,7 @@ const loginInit = async () => {
     if (isLoggedIn) {
       // 已登录，跳转到首页
       loadingText.value = '登录成功！'
-      // await navigateTo('/home')
+      await navigateTo('/home')
     } else {
       // 未登录，获取登录 URL 并跳转
       loadingText.value = '正在跳转到登录页面...'

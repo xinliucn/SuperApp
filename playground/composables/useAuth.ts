@@ -13,15 +13,17 @@ export const useAuth = () => {
     try {
       // 调用 Nitro 代理接口获取登录 URL
       const response = await $fetch<{ url: string }>('/api/auth/login')
+      console.log('Login response:', response);
+      
 
-      if (response?.url) {
-        // 跳转到 Windmill 登录页面
-        if (import.meta.client) {
-          window.location.href = response.url
-        }
-      } else {
-        throw new Error('未获取到登录 URL')
-      }
+      // if (response?.url) {
+      //   // 跳转到 Windmill 登录页面
+      //   if (import.meta.client) {
+      //     window.location.href = response.url
+      //   }
+      // } else {
+      //   throw new Error('未获取到登录 URL')
+      // }
     } catch (error) {
       console.error('Login failed:', error)
       throw error
@@ -51,11 +53,16 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       // 调用 Nitro 代理接口（不是直接调用 Windmill API）
-      const userData = await $fetch<User>('/api/auth/user')
+      // const userData = await $fetch<User>('/api/auth/user')
+      const userData = {
+    "code": 0,
+    "status": "no_session",
+    "message": "First visit, no session found. Please login.",
+    "authenticated": false
+}
       console.log('checkAuth userData:', userData);
       
-      if (userData) {
-        user.value = userData
+      if (userData.code == 1) {
         isLoggedIn.value = true
         return true
       }
