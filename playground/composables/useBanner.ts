@@ -1,3 +1,25 @@
+// Banner 类型定义
+export interface Banner {
+  id: string
+  Sort: string
+  imageUrl: string | null
+  imageUpload: string
+  title?: string
+}
+
+// API 响应类型
+interface BannerResponse {
+  code: number
+  data: {
+    banners: Banner[]
+    totalCount: number
+  }
+  user?: {
+    user_id: string
+    username: string
+  }
+  message: string
+}
 
 export const useBanner = () => {
   // 使用 useState 缓存 banner 数据
@@ -16,11 +38,11 @@ export const useBanner = () => {
       loading.value = true
       error.value = null
 
-      const response: any = await $fetch<any[]>('/api/tenant/homePageBanner')
+      const response = await $fetch<BannerResponse>('/api/tenant/homePageBanner')
 
-      if (response) {
+      if (response && response.code === 1 && response.data?.banners) {
         banners.value = response.data.banners
-        return response
+        return banners.value
       }
 
       return []

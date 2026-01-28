@@ -33,7 +33,7 @@
           <!-- 轮播图内容 -->
           <el-carousel v-else-if="apiBanners.length" :interval="5000" height="300px" :arrow="carouselArrow">
             <el-carousel-item v-for="(banner, index) in apiBanners" :key="banner.id || index">
-              <div class="banner-item" :style="{ backgroundImage: `url(${banner.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }">
+              <div class="banner-item" :style="{ backgroundImage: `url(${banner.imageUpload || banner.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }">
                 <div class="banner-content">
                   <h3 v-if="banner.title" class="banner-title">{{ banner.title }}</h3>
                 </div>
