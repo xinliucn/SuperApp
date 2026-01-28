@@ -50,20 +50,13 @@ export const useAuth = () => {
   // 检查登录状态 - 通过调用 API 验证 cookie
   const checkAuth = async () => {
     try {
-      const userData = await $fetch<User>('/api/auth/user')
-
-      if (userData) {
-        user.value = userData
-        isLoggedIn.value = true
-        return true
-      }
-
-      return false
+      const userData = await $fetch<User>('/api/r/weaver/auth/user')
+      console.log('checkAuth userData:', userData);
+      
     } catch (error) {
       // 401 错误表示未登录
-      user.value = null
-      isLoggedIn.value = false
-      return false
+     console.log('checkAuth error:', error);
+     
     }
   }
 
