@@ -53,13 +53,13 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       // 调用 Nitro 代理接口（不是直接调用 Windmill API）
-      // const userData = await $fetch<User>('/api/auth/user')
-      const userData = {
-    "code": 0,
-    "status": "no_session",
-    "message": "First visit, no session found. Please login.",
-    "authenticated": false
-}
+      const userData = await $fetch<User>('/api/auth/user')
+//       const userData = {
+//     "code": 0,
+//     "status": "no_session",
+//     "message": "First visit, no session found. Please login.",
+//     "authenticated": false
+// }
       console.log('checkAuth userData:', userData);
       
       if (userData.code == 1) {

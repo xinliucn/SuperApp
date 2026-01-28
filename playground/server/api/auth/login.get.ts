@@ -3,9 +3,18 @@ export default defineEventHandler(async (event) => {
   const apiBase = config.public.apiBase
 
   try {
+    // 获取客户端的请求头
+    const cookieHeader = getRequestHeader(event, 'cookie')
+    const userAgent = getRequestHeader(event, 'user-agent')
+
     // 调用 Windmill API 获取登录 URL
     const response = await $fetch<{ url: string }>(`${apiBase}/api/r/weaver/auth/login`, {
-      method: 'GET'
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        ...(cookieHeader && { cookie: cookieHeader }),
+        ...(userAgent && { 'user-agent': userAgent })
+      }
     })
 
     return response
