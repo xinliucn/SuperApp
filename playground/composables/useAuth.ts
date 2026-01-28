@@ -12,19 +12,19 @@ export const useAuth = () => {
   const login = async () => {
     try {
       // 调用 Nitro 代理接口获取登录 URL（使用 POST 方法）
-      const response = await $fetch<{ url: string }>('/api/auth/login', {
+      const response = await $fetch<{ authorization_url: string }>('/api/auth/login', {
         method: 'POST'
       })
       console.log('Login response:', response)
 
-      // if (response?.url) {
-      //   // 跳转到 Windmill 登录页面
-      //   if (import.meta.client) {
-      //     window.location.href = response.url
-      //   }
-      // } else {
-      //   throw new Error('未获取到登录 URL')
-      // }
+      if (response?.authorization_url) {
+        // 跳转到 Windmill 登录页面
+        if (import.meta.client) {
+          window.location.href = response.authorization_url
+        }
+      } else {
+        throw new Error('未获取到登录 URL')
+      }
     } catch (error) {
       console.error('Login failed:', error)
       throw error
