@@ -8,10 +8,9 @@ export default defineEventHandler(async (event) => {
     const userAgent = getRequestHeader(event, 'user-agent')
     const referer = getRequestHeader(event, 'referer')
 
-    // 调用 Windmill API 获取用户信息，转发 cookie 和相关请求头
-    const response = await $fetch(`${apiBase}/api/r/weaver/auth/user`, {
+    // 调用 Windmill API 获取用户信息，使用 raw 获取完整响应
+    const response = await $fetch.raw(`${apiBase}/api/r/weaver/auth/user`, {
       method: 'GET',
-      credentials: 'include',
       headers: {
         ...(cookieHeader && { cookie: cookieHeader }),
         ...(userAgent && { 'user-agent': userAgent }),
@@ -19,7 +18,13 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    return response
+    // 转发 Windmill 返回的 Set-Cookie 到客户端
+    const setCookieHeaders = response.headers.get('set-cookie')
+    if (setCookieHeaders) {
+      setHeader(event, 'set-cookie', setCookieHeaders)
+    }
+
+    return response._data
   } catch (error: any) {
     console.error('Get user API error:', error)
 

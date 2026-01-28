@@ -1,0 +1,59 @@
+# 依赖目录
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Nuxt 构建产物
+.nuxt
+.output
+dist
+
+# 环境变量文件
+.env
+.env.*
+!.env.example
+
+# IDE 配置
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# 测试和覆盖率
+coverage
+.nyc_output
+
+# 日志文件
+*.log
+logs
+
+# 临时文件
+tmp
+temp
+*.tmp
+
+# 文档
+*.md
+!README.md
+
+# Docker 相关
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# 其他
+.cache

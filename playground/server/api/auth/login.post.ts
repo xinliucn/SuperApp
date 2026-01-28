@@ -7,17 +7,22 @@ export default defineEventHandler(async (event) => {
     const cookieHeader = getRequestHeader(event, 'cookie')
     const userAgent = getRequestHeader(event, 'user-agent')
 
-    // 调用 Windmill API 获取登录 URL
-    const response = await $fetch<{ url: string }>(`${apiBase}/api/r/weaver/auth/login`, {
+    // 调用 Windmill API 获取登录 URL，使用 raw 获取完整响应
+    const response = await $fetch.raw<{ url: string }>(`${apiBase}/api/r/weaver/auth/login`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
         ...(cookieHeader && { cookie: cookieHeader }),
         ...(userAgent && { 'user-agent': userAgent })
       }
     })
 
-    return response
+    // 转发 Windmill 返回的 Set-Cookie 到客户端
+    const setCookieHeaders = response.headers.get('set-cookie')
+    if (setCookieHeaders) {
+      setHeader(event, 'set-cookie', setCookieHeaders)
+    }
+
+    return response._data
   } catch (error: any) {
     console.error('Login API error:', error)
     throw createError({
