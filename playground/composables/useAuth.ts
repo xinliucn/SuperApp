@@ -81,7 +81,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       // 调用 Nitro 代理接口登出
-      const response = await $fetch<{ code: number; data: { logout_url?: string }; message: string }>('/api/auth/logout', {
+      const response = await $fetch<{ code: number;  logout_url?: string ; message: string }>('/api/auth/logout', {
         method: 'POST'
       })
 
@@ -90,9 +90,9 @@ export const useAuth = () => {
       isLoggedIn.value = false
 
       // 如果有登出 URL，跳转到 Windmill 登出页面
-      if (response?.code === 1 && response.data?.logout_url) {
+      if (response?.code === 1 && response?.logout_url) {
         if (import.meta.client) {
-          window.location.href = response.data.logout_url
+          window.location.href = response.logout_url
         }
       }
 
