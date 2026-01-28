@@ -139,12 +139,15 @@ definePageMeta({
 
 // 使用 useBanner composable 获取 banner 数据
 const { banners: apiBanners, loading: bannersLoading, error: bannersError, fetchBanners } = useBanner()
+const { checkAuth, login } = useAuth()
 
 // 页面加载时获取 banner 数据
 onMounted(async () => {
   try {
-    await fetchBanners()
-    console.log('Banner data loaded:', apiBanners.value)
+    const isLoggedIn = await checkAuth()
+    if (isLoggedIn) {
+        await fetchBanners()
+    }
   } catch (err) {
     console.error('Failed to load banners:', err)
   }

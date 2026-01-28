@@ -20,7 +20,7 @@ export const useAuth = () => {
       if (response?.authorization_url) {
         // 跳转到 Windmill 登录页面
         if (import.meta.client) {
-          window.location.href = response.authorization_url
+          // window.location.href = response.authorization_url
         }
       } else {
         throw new Error('未获取到登录 URL')
