@@ -1,10 +1,3 @@
-export interface Banner {
-  id: string
-  imageUrl: string
-  title?: string
-  link?: string
-  // 根据实际 API 返回的数据结构调整
-}
 
 export const useBanner = () => {
   // 使用 useState 缓存 banner 数据
@@ -23,10 +16,10 @@ export const useBanner = () => {
       loading.value = true
       error.value = null
 
-      const response = await $fetch<Banner[]>('/api/tenant/homePageBanner')
+      const response: any = await $fetch<any[]>('/api/tenant/homePageBanner')
 
       if (response) {
-        banners.value = response
+        banners.value = response.data.banners
         return response
       }
 
