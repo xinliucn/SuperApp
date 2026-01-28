@@ -50,13 +50,22 @@ export const useAuth = () => {
   // 检查登录状态 - 通过调用 API 验证 cookie
   const checkAuth = async () => {
     try {
+      // 调用 Nitro 代理接口（不是直接调用 Windmill API）
       const userData = await $fetch<User>('/api/r/weaver/auth/user')
       console.log('checkAuth userData:', userData);
       
+      if (userData) {
+        user.value = userData
+        isLoggedIn.value = true
+        return true
+      }
+
+      return false
     } catch (error) {
       // 401 错误表示未登录
-     console.log('checkAuth error:', error);
-     
+      user.value = null
+      isLoggedIn.value = false
+      return false
     }
   }
 

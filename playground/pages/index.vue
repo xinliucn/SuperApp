@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // 禁用默认布局，登录页面不需要导航栏
 definePageMeta({
   layout: false
@@ -31,11 +31,12 @@ const loginInit = async () => {
   try {
     // 检查是否已登录（通过调用 API 验证 cookie）
     const isLoggedIn = await checkAuth()
-
+    console.log('Login status:', isLoggedIn);
+    
     if (isLoggedIn) {
       // 已登录，跳转到首页
       loadingText.value = '登录成功！'
-      await navigateTo('/home')
+      // await navigateTo('/home')
     } else {
       // 未登录，获取登录 URL 并跳转
       loadingText.value = '正在跳转到登录页面...'
