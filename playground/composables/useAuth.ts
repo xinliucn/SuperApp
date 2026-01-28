@@ -51,7 +51,7 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       // 调用 Nitro 代理接口（不是直接调用 Windmill API）
-      const userData = await $fetch<User>('/api/r/weaver/auth/user')
+      const userData = await $fetch<User>('/api/auth/user')
       console.log('checkAuth userData:', userData);
       
       if (userData) {
