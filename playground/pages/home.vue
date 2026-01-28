@@ -31,16 +31,23 @@
             </el-skeleton>
           </div>
           <!-- 轮播图内容 -->
-          <el-carousel v-else :interval="5000" height="300px" :arrow="carouselArrow">
-            <el-carousel-item v-for="(banner, index) in banners" :key="index">
-              <div class="banner-item" :style="{ background: banner.color }">
+          <el-carousel v-else-if="apiBanners.length" :interval="5000" height="300px" :arrow="carouselArrow">
+            <el-carousel-item v-for="(banner, index) in apiBanners" :key="banner.id || index">
+              <div class="banner-item" :style="{ backgroundImage: `url(${banner.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }">
                 <div class="banner-content">
-                  <h3 class="banner-title">{{ banner.title }}</h3>
-                  <p class="banner-description">{{ banner.description }}</p>
+                  <h3 v-if="banner.title" class="banner-title">{{ banner.title }}</h3>
                 </div>
               </div>
             </el-carousel-item>
           </el-carousel>
+          <!-- 错误状态 -->
+          <div v-else-if="bannersError" class="banner-error">
+            加载失败，请稍后重试
+          </div>
+          <!-- 空状态 -->
+          <div v-else class="banner-empty">
+            暂无轮播图
+          </div>
         </div>
 
         <!-- Departmental Portal -->
@@ -130,6 +137,19 @@ definePageMeta({
   layout: 'default',
 })
 
+// 使用 useBanner composable 获取 banner 数据
+const { banners: apiBanners, loading: bannersLoading, error: bannersError, fetchBanners } = useBanner()
+
+// 页面加载时获取 banner 数据
+onMounted(async () => {
+  try {
+    await fetchBanners()
+    console.log('Banner data loaded:', apiBanners.value)
+  } catch (err) {
+    console.error('Failed to load banners:', err)
+  }
+})
+
 const activeTab = ref('outstanding')
 
 // 轮播图箭头显示控制（根据屏幕尺寸）
@@ -179,36 +199,6 @@ const moreMenuItems = ref([
   { label: 'Organization', url: '', hasSubmenu: true },
   { label: 'Info Center', url: '', hasSubmenu: true },
   { label: 'Delegation', url: '', hasSubmenu: false },
-])
-
-// Banner 加载状态
-const bannersLoading = ref(true)
-
-// 模拟加载 Banner 数据
-onMounted(() => {
-  // 模拟异步加载，2秒后显示轮播图
-  setTimeout(() => {
-    bannersLoading.value = false
-  }, 2000)
-})
-
-// Banner 轮播数据
-const banners = ref([
-  {
-    title: '欢迎使用企业门户系统',
-    description: '一站式企业服务平台，提升工作效率',
-    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-  },
-  {
-    title: '最新公告',
-    description: '系统升级通知：本周五晚上10点进行系统维护',
-    color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-  },
-  {
-    title: '新功能上线',
-    description: '移动端应用已上线，随时随地处理工作',
-    color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
-  }
 ])
 
 // 应用列表
@@ -458,6 +448,18 @@ const handleShopClick = (shop: any) => {
   width: 0.8rem;
   height: 0.8rem;
   border-radius: 50%;
+}
+
+.banner-error,
+.banner-empty {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 1.4rem;
+  border-radius: 0.8rem;
 }
 
 /* ========================================
