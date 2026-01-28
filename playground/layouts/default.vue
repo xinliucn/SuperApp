@@ -117,9 +117,16 @@
 <script setup lang="ts">
 const { logout } = useAuth()
 
-const handleLogout = () => {
-  logout()
-  navigateTo('/')
+const handleLogout = async () => {
+  try {
+    await logout()
+    // logout 函数会处理跳转到 Windmill 登出页面
+    // 如果没有 logout_url，则跳转到首页
+  } catch (error) {
+    console.error('❌ 登出失败:', error)
+    // 即使失败也跳转到首页
+    navigateTo('/')
+  }
 }
 
 // Workspace 下拉菜单处理函数

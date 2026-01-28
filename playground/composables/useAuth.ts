@@ -20,7 +20,7 @@ export const useAuth = () => {
       if (response?.authorization_url) {
         // 跳转到 Windmill 登录页面
         if (import.meta.client) {
-          // window.location.href = response.authorization_url
+          window.location.href = response.authorization_url
         }
       } else {
         throw new Error('未获取到登录 URL')
@@ -78,9 +78,32 @@ export const useAuth = () => {
   }
 
   // 登出函数
-  const logout = () => {
-    user.value = null
-    isLoggedIn.value = false
+  const logout = async () => {
+    try {
+      // 调用 Nitro 代理接口登出
+      const response = await $fetch<{ code: number; data: { logout_url?: string }; message: string }>('/api/auth/logout', {
+        method: 'POST'
+      })
+
+      // 清除本地状态
+      user.value = null
+      isLoggedIn.value = false
+
+      // 如果有登出 URL，跳转到 Windmill 登出页面
+      if (response?.code === 1 && response.data?.logout_url) {
+        if (import.meta.client) {
+          window.location.href = response.data.logout_url
+        }
+      }
+
+      return response
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // 即使 API 调用失败，也清除本地状态
+      user.value = null
+      isLoggedIn.value = false
+      throw error
+    }
   }
 
   return {
