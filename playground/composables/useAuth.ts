@@ -8,59 +8,69 @@ export const useAuth = () => {
   const user = useState<User | null>('auth:user', () => null)
   const isLoggedIn = useState<boolean>('auth:isLoggedIn', () => false)
 
-  // 登录函数
-  const login = (username: string, password: string) => {
-    // 这里可以添加实际的 API 调用
-    // 现在只是模拟验证
-    if (username && password) {
-      user.value = {
-        username,
-        email: `${username}@example.com`
-      }
-      isLoggedIn.value = true
+  // 登录函数 - 获取登录 URL 并跳转
+  const login = async () => {
+    try {
+      // 调用 Nitro 代理接口获取登录 URL
+      const response = await $fetch<{ url: string }>('/api/auth/login')
 
-      // 可选：保存到 localStorage 以便刷新后恢复
-      if (process.client) {
-        localStorage.setItem('auth:user', JSON.stringify(user.value))
-        localStorage.setItem('auth:isLoggedIn', 'true')
+      if (response?.url) {
+        // 跳转到 Windmill 登录页面
+        if (import.meta.client) {
+          window.location.href = response.url
+        }
+      } else {
+        throw new Error('未获取到登录 URL')
       }
-
-      return true
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw error
     }
-    return false
+  }
+
+  // 处理回调 - 验证 cookie 并获取用户信息
+  const handleCallback = async () => {
+    try {
+      // 调用 Nitro 代理接口验证 cookie 并获取用户信息
+      const userData = await $fetch<User>('/api/auth/user')
+
+      if (userData) {
+        user.value = userData
+        isLoggedIn.value = true
+        return true
+      }
+
+      return false
+    } catch (error) {
+      console.error('Callback handling failed:', error)
+      throw error
+    }
+  }
+
+  // 检查登录状态 - 通过调用 API 验证 cookie
+  const checkAuth = async () => {
+    try {
+      const userData = await $fetch<User>('/api/auth/user')
+
+      if (userData) {
+        user.value = userData
+        isLoggedIn.value = true
+        return true
+      }
+
+      return false
+    } catch (error) {
+      // 401 错误表示未登录
+      user.value = null
+      isLoggedIn.value = false
+      return false
+    }
   }
 
   // 登出函数
   const logout = () => {
     user.value = null
     isLoggedIn.value = false
-
-    // 清除 localStorage
-    if (process.client) {
-      localStorage.removeItem('auth:user')
-      localStorage.removeItem('auth:isLoggedIn')
-    }
-  }
-
-  // 从 localStorage 恢复登录状态
-  const restoreAuth = () => {
-    if (process.client) {
-      const savedUser = localStorage.getItem('auth:user')
-      const savedIsLoggedIn = localStorage.getItem('auth:isLoggedIn')
-
-      if (savedUser && savedIsLoggedIn === 'true') {
-        user.value = JSON.parse(savedUser)
-        isLoggedIn.value = true
-      }
-    }
-  }
-
-  // 检查是否已登录
-  const checkAuth = () => {
-    if (!isLoggedIn.value) {
-      restoreAuth()
-    }
-    return isLoggedIn.value
   }
 
   return {
@@ -68,7 +78,7 @@ export const useAuth = () => {
     isLoggedIn,
     login,
     logout,
-    restoreAuth,
+    handleCallback,
     checkAuth
   }
 }

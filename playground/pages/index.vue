@@ -24,32 +24,32 @@ definePageMeta({
   layout: false
 })
 
-// const { data, error, pending } = await useGet<User>('/api/r/weaver/auth/user')
-
-const loadingText = ref('Login failed')
+const { checkAuth, login } = useAuth()
+const loadingText = ref('正在检查登录状态...')
 
 const loginInit = async () => {
   try {
-    // 更新状态为检查中
-    loadingText.value = 'Checking login status...'
-    // 模拟延迟
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    if (true) {
+    // 检查是否已登录（通过调用 API 验证 cookie）
+    const isLoggedIn = await checkAuth()
+
+    if (isLoggedIn) {
       // 已登录，跳转到首页
-      loadingText.value = 'Login successful!'
+      loadingText.value = '登录成功！'
       await navigateTo('/home')
     } else {
-      loadingText.value = 'Login failed'
+      // 未登录，获取登录 URL 并跳转
+      loadingText.value = '正在跳转到登录页面...'
+      await login()
     }
   } catch (error) {
-    console.error('Login check failed:', error)
-    loadingText.value = 'Login failed'
+    console.error('Login initialization failed:', error)
+    loadingText.value = '登录失败，请刷新页面重试'
   }
 }
 
-// 页面加载时检查是否已登录
+// 页面加载时初始化登录流程
 onMounted(async () => {
-loginInit()
+  await loginInit()
 })
 </script>
 
