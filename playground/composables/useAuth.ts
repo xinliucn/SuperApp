@@ -11,10 +11,11 @@ export const useAuth = () => {
   // 登录函数 - 获取登录 URL 并跳转
   const login = async () => {
     try {
-      // 调用 Nitro 代理接口获取登录 URL
-      const response = await $fetch<{ url: string }>('/api/auth/login')
-      console.log('Login response:', response);
-      
+      // 调用 Nitro 代理接口获取登录 URL（使用 POST 方法）
+      const response = await $fetch<{ url: string }>('/api/auth/login', {
+        method: 'POST'
+      })
+      console.log('Login response:', response)
 
       // if (response?.url) {
       //   // 跳转到 Windmill 登录页面
@@ -53,7 +54,7 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       // 调用 Nitro 代理接口（不是直接调用 Windmill API）
-      const userData = await $fetch<User>('/api/auth/user')
+      const userData:any = await $fetch<User>('/api/auth/user')
 //       const userData = {
 //     "code": 0,
 //     "status": "no_session",

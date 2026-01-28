@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
     // 调用 Windmill API 获取登录 URL
     const response = await $fetch<{ url: string }>(`${apiBase}/api/r/weaver/auth/login`, {
-      method: 'GET',
+      method: 'POST',
       credentials: 'include',
       headers: {
         ...(cookieHeader && { cookie: cookieHeader }),
